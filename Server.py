@@ -15,7 +15,7 @@ while run_server:
     asked_connections, wlist, xlist = select.select([s], [], [], 0.05)
     clientsocket, address = s.accept()
     print(f"Connection from {address} has been established!")
-    clientsocket.send(bytes("Welcome to the server!", "utf-8"))
+    clientsocket.send(bytes("Welcome to the game!", "utf-8"))
 
     for connection in asked_connections:
         connection_with_client, infos_connection = connection.accept()
@@ -34,10 +34,10 @@ while run_server:
             print("Reçu {}".format(msg_received))
             client.send(b"5 / 5")
 
-            if msg_received == "fin":
-                serveur_lance = False
+            if msg_received == "end":
+                run_server = False
 
-print("Fermeture des connexions")
+print("Close connections")
 for client in connected_clients:
     client.close()
 
