@@ -1,7 +1,7 @@
 import socket
 import select
 
-PORT = 65432
+PORT = 65433
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((socket.gethostname(), PORT))
