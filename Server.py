@@ -6,7 +6,7 @@ import random
 import types
 
 
-def accept_wrapper(sock): # get the new socket object and register it with the selector.
+def accept_wrapper(sock):  # get the new socket object and register it with the selector.
     conn, addr = sock.accept()  # Should be ready to read
     print('accepted connection from', addr)
     conn.setblocking(False) # put the socket in non-blocking mode
@@ -14,14 +14,15 @@ def accept_wrapper(sock): # get the new socket object and register it with the s
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(conn, events, data=data) # The events mask, socket, and data objects are passed
 
-def service_connection(key, mask):
+
+def service_connection(key, mask):  # Client connection handler when it’s ready
     sock = key.fileobj
     data = key.data
-    if mask & selectors.EVENT_READ:
+    if mask & selectors.EVENT_READ:  # Socket ready for reading
         recv_data = sock.recv(1024)  # Should be ready to read
         if recv_data:
             data.outb += recv_data
-        else:
+        else:  # block if no data is received
             print('closing connection to', data.addr)
             sel.unregister(sock)
             sock.close()
