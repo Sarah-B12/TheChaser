@@ -1,7 +1,7 @@
 def get_question(n, t):
   return a[n][t]
 
-a = [[0 for i in range(10)] for i in range(1)]
+a = [[0 for i in range(10)] for i in range(2)]
 
 # a[i][j] = ["question", "option A", "option B", "option C", "option D", "correct answer"]
 
