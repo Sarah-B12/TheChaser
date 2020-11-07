@@ -17,9 +17,6 @@ while msg_to_send != b"no":
     msg_received = s.recv(1024)
     print(msg_received.decode())
 
-def answer_questions:
-    answer= input("choose an answer")
-    s.send(answer.encode())
 
 
 
@@ -29,6 +26,11 @@ s.close()
 Money=0
  def get_money:
      return Money
+
+def answer_questions:
+    answer= input("choose an answer")
+    s.send(answer.encode())
+
 
 def first_level
     msg_received2 = s.recv(1024)
