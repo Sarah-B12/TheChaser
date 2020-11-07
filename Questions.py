@@ -28,3 +28,9 @@ a[1][6] = ["In which mountain range is Mount Everest?","Jura","Alpes","Vosges","
 a[1][7] = ["Who invented the telephone?","Alexandre Bell","Thomas Edison","Raffaele Esposito","Alexander Fleming","Alexandre Bell"]
 a[1][8] = ["When did San Francisco earthquake happen?","1998","1906","2000","2006","1906"]
 a[1][9] = ["How do you recognize a left-handed elephant?","He writes with his left hand","His left tusk is more used","He blinks with his left eye","He sleeps more on his right side","His left tusk is more used"]
+
+
+def get_answer(n,t):
+  q = get_question(n,t)
+  return q[5]
+
