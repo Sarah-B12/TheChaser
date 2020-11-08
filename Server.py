@@ -1,5 +1,6 @@
 import socket
-import select
+import argparse
+import threading
 import random
 import Questions
 
@@ -51,53 +52,51 @@ def ask_question(lvl):
     correct_answer = q[5]
     return qnum
 
-HOST = ''
-PORT = 65433
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((HOST, PORT))
-s.listen(3)
+parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
+parser.add_argument('--host', metavar='host', type=str, nargs='?', default=socket.gethostname())
+parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65433)
+args = parser.parse_args()
 
-run_server = True
-connected_clients = []
-while run_server:
-    asked_connections, wlist, xlist = select.select([s], [], [], 0.05)
-    clientsocket, address = s.accept()
-    print(f"Connection from {address} has been established!")
-    clientsocket.send(bytes("Welcome to the game! Do you want to play?", "utf-8"))
+print(f"Running the server on: {args.host} and port: {args.port}")
 
-    for connection in asked_connections:
-        connection_with_client, infos_connection = connection.accept()
-        connected_clients.append(connection_with_client)
+sck = socket.socket()
+sck.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    clients_to_read = []
-    try:
-        clients_to_read, wlist, xlist = select.select(connected_clients, [], [], 0.05)
-    except select.error:
-        pass
-    else:
-        # We go through the list of clients to read
-        for client in clients_to_read:
-            msg_received = client.recv(1024)
-            msg_received = msg_received.decode()
-            print("Reçu {}".format(msg_received))
-            client.send(b"5 / 5")
-            if msg_received == "no":
-                run_server = False
+try:
+    sck.bind((args.host, args.port))
+    sck.listen(3)
+except Exception as e:
+    raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
 
-print("Close connections")
-for client in connected_clients:
+
+def on_new_client(client, connection):
+    ip = connection[0]
+    port = connection[1]
+    print(f"The new connection was made from IP: {ip}, and port: {port}!")
+    while True:  # Reboucle à welcome to the game
+        welcome = f"Welcome to the game! Do you want to play?"
+        client.send(welcome.encode('utf-8'))
+        msg = client.recv(1024)
+        if msg.decode() == 'no':
+            break
+        print(f"The client said: {msg.decode()}")
+        reply = f"Let's start!"
+        client.send(reply.encode('utf-8'))
+
+
+
+    print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
 
-s.close()
 
+while True:
+    try:
+        client, ip = sck.accept()
+        threading._start_new_thread(on_new_client, (client, ip))
+    except KeyboardInterrupt:
+        print(f"Gracefully shutting down the server!")
+    except Exception as e:
+        print(f"Well I did not anticipate this: {e}")
 
-
-
-
-
-
-
-
-
-
+sck.close()
