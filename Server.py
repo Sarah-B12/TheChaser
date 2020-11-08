@@ -46,11 +46,28 @@ def ask_question(lvl):
 
     to_return += "\n A. " + q[1] + "\t\t B. " + q[2]
     to_return += "\n C. " + q[3] + "\t\t D. " + q[4]
-    print("the question is: {}".format(to_return))
+    print("The question is: {}".format(to_return))
 
     global correct_answer
     correct_answer = q[5]
     return qnum
+
+
+def check_answer(lvl):
+    global correct_answer, q
+    msg = client.recv(1024)
+    answer = msg.decode()
+    answer = answer.lower()
+    if not (answer in acceptable_answers):  # Checking if the input makes sens
+        reply = "I don't understand what you mean. Enter the answer letter"
+        client.send(reply.encode('utf-8'))
+        check_answer(lvl)
+    elif (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
+        if (correct_answer == answer):
+            print("TO DO TO DO TO DO TO DO TO DO")
+        else:
+            print("\n The answer you chose is incorrect.\n The right answer is %s." % correct_answer)
+
 
 
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
@@ -62,6 +79,7 @@ print(f"Running the server on: {args.host} and port: {args.port}")
 
 sck = socket.socket()
 sck.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+acceptable_answers = ["a", "b", "c", "d", "A", "B", "C", "D"]
 
 try:
     sck.bind((args.host, args.port))
