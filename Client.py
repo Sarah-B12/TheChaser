@@ -46,6 +46,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
         if msg == 'no':
             print("Bye!")
             break
-        data = sck.recv(1024)
-        print(f"The server's response was: {data.decode()}")  # "Let's start !"
+        firstq = sck.recv(1024)
+        print(f"{firstq.decode()}")
+        firstansw = input("> ")
+        sck.send(firstansw.encode('utf-8'))
 

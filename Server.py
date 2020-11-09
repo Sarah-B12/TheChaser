@@ -46,7 +46,7 @@ def ask_question(lvl):
 
     to_return += "\n A. " + q[1] + "\t\t B. " + q[2]
     to_return += "\n C. " + q[3] + "\t\t D. " + q[4]
-    print("The question is: {}".format(to_return))
+    client.send(to_return.encode('utf-8'))
 
     global correct_answer
     correct_answer = q[5]
@@ -98,9 +98,11 @@ def on_new_client(client, connection):
         msg = client.recv(1024)
         if msg.decode() == 'no':
             break
-        print(f"The client said: {msg.decode()}")
-        reply = f"Let's start!"
-        client.send(reply.encode('utf-8'))
+        print(f"The player said: {msg.decode()}")
+        firstq = ask_question(0)
+        firstansw = client.recv(1024)
+        print(f"The player said: {firstansw.decode()}")
+        # check_answer()
 
 
 
