@@ -38,6 +38,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
     except Exception as e:
         raise SystemExit(f"We have failed to connect to host: {args.host} on port: {args.port}, because: {e}")
 
+firstlevel = 0
     while True:
         welcome_msg = sck.recv(1024)
         print(welcome_msg.decode("utf-8"))
@@ -46,8 +47,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
         if msg == 'no':
             print("Bye!")
             break
-        firstq = sck.recv(1024)
-        print(f"{firstq.decode()}")
-        firstansw = input("> ")
-        sck.send(firstansw.encode('utf-8'))
+        while True:
+            firstq = sck.recv(1024)
+            print(f"{firstq.decode()}")
+            firstansw = input("> ")
+            sck.send(firstansw.encode('utf-8'))
 

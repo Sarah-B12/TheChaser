@@ -53,21 +53,23 @@ def ask_question(lvl):
     return qnum
 
 
-def check_answer(lvl):
-    global correct_answer, q
-    msg = client.recv(1024)
-    answer = msg.decode()
-    answer = answer.lower()
-    if not (answer in acceptable_answers):  # Checking if the input makes sens
+def check_valid_answer(firstanswer):
+    #msg = client.recv(1024)
+    #answer = msg.decode()
+    #answer = answer.lower()
+    if not (firstanswer in acceptable_answers):  # Checking if the input makes sens
         reply = "I don't understand what you mean. Enter the answer letter"
         client.send(reply.encode('utf-8'))
-        check_answer(lvl)
-    elif (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
-        if (correct_answer == answer):
-            print("TO DO TO DO TO DO TO DO TO DO")
-        else:
-            print("\n The answer you chose is incorrect.\n The right answer is %s." % correct_answer)
-
+        msg=client.recv(1024)                   #recieve the new answer
+        answer=msg.decode()
+        check_answer(answer)
+    #elif (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
+       #if (correct_answer == answer):
+            #print("TO DO TO DO TO DO TO DO TO DO")
+        #else:
+            #print("\n The answer you chose is incorrect.\n The right answer is %s." % correct_answer)
+      else
+          return 0
 
 
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
@@ -87,7 +89,10 @@ try:
 except Exception as e:
     raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
 
-
+ThreadCount = 0
+counter = 0
+firstlevel =0
+Money = 0
 def on_new_client(client, connection):
     ip = connection[0]
     port = connection[1]
@@ -99,21 +104,46 @@ def on_new_client(client, connection):
         if msg.decode() == 'no':
             break
         print(f"The player said: {msg.decode()}")
-        firstq = ask_question(0)
-        firstansw = client.recv(1024)
-        print(f"The player said: {firstansw.decode()}")
-        # check_answer()
+        First_level_function()
 
 
+def First_level_function
+         while firstlevel != 3
+            firstq = ask_question(0)
+            firstansw = client.recv(1024)
+             print(f"The player said: {firstansw.decode()}")
+             # check_answer()
+              check_valid_answer(firstansw)
+              good_answer = Questions.get_answer(0, firstq)
+            if firstansw == good_answer
+                print("Good Answer")
+                counter+=1
+            else
+                print("wrong answer")
+     if counter == 0
+         printf("restart")        #revenir a welcome????
+    if counter == 1
+        Money = 5000
+        Second_level_function
+    if counter == 2
+        Money = 10000
+        Second_level_function
+    if counter == 3
+        Money = 15000
+        Second_level_function
+
+def Second_level_function
+print("You have 3 options:\n A: you can keep your actual Money and go to the next level\n B:start playing with the chaser for the double of your actual money\n C:playing alone for the half of your actual money ")
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
 
 
-while True:
+while ThreadCount!=3:       #accept 3 client
     try:
         client, ip = sck.accept()
         threading._start_new_thread(on_new_client, (client, ip))
+        ThreadCount+=1
     except KeyboardInterrupt:
         print(f"Gracefully shutting down the server!")
     except Exception as e:
