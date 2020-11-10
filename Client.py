@@ -39,17 +39,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
         raise SystemExit(f"We have failed to connect to host: {args.host} on port: {args.port}, because: {e}")
 
 firstlevel = 0
+while True:
+    welcome_msg = sck.recv(1024)
+    print(welcome_msg.decode("utf-8"))
+    msg = input("> ")
+    sck.send(msg.encode('utf-8'))
+    if msg == 'no':
+        print("Bye!")
+        break
     while True:
-        welcome_msg = sck.recv(1024)
-        print(welcome_msg.decode("utf-8"))
-        msg = input("> ")
-        sck.send(msg.encode('utf-8'))
-        if msg == 'no':
-            print("Bye!")
-            break
-        while True:
-            firstq = sck.recv(1024)
-            print(f"{firstq.decode()}")
-            firstansw = input("> ")
-            sck.send(firstansw.encode('utf-8'))
+        firstq = sck.recv(1024)
+        print(f"{firstq.decode()}")
+        firstansw = input("> ")
+        sck.send(firstansw.encode('utf-8'))
 

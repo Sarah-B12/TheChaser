@@ -68,8 +68,8 @@ def check_valid_answer(firstanswer):
             #print("TO DO TO DO TO DO TO DO TO DO")
         #else:
             #print("\n The answer you chose is incorrect.\n The right answer is %s." % correct_answer)
-      else
-          return 0
+    else:
+        return 0
 
 
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
@@ -107,21 +107,21 @@ def on_new_client(client, connection):
         First_level_function()
 
 
-def First_level_function
-         while firstlevel != 3
-            firstq = ask_question(0)
-            firstansw = client.recv(1024)
-             print(f"The player said: {firstansw.decode()}")
+def First_level_function():
+    while firstlevel != 3:
+        firstq = ask_question(0)
+        firstansw = client.recv(1024)
+        print(f"The player said: {firstansw.decode()}")
              # check_answer()
-              check_valid_answer(firstansw)
-              good_answer = Questions.get_answer(0, firstq)
-            if firstansw == good_answer
-                print("Good Answer")
-                counter+=1
-            else
+        check_valid_answer(firstansw)
+        good_answer = Questions.get_answer(0, firstq)
+        if firstansw == good_answer
+            print("Good Answer")
+            counter+=1
+        else
                 print("wrong answer")
-     if counter == 0
-         printf("restart")        #revenir a welcome????
+    if counter == 0
+         print("restart")        #revenir a welcome????
     if counter == 1
         Money = 5000
         Second_level_function
@@ -132,8 +132,8 @@ def First_level_function
         Money = 15000
         Second_level_function
 
-def Second_level_function
-print("You have 3 options:\n A: you can keep your actual Money and go to the next level\n B:start playing with the chaser for the double of your actual money\n C:playing alone for the half of your actual money ")
+def Second_level_function():
+    print("You have 3 options:\n A: you can keep your actual Money and go to the next level\n B:start playing with the chaser for the double of your actual money\n C:playing alone for the half of your actual money ")
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
