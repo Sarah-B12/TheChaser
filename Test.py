@@ -4,7 +4,7 @@ import threading
 
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
 parser.add_argument('--host', metavar='host', type=str, nargs='?', default=socket.gethostname())
-parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65433)
+parser.add_argument('--port', metavar='port', type=int, nargs='?', default=9999)
 args = parser.parse_args()
 
 print(f"Running the server on: {args.host} and port: {args.port}")
@@ -14,7 +14,7 @@ sck.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
 try:
     sck.bind((args.host, args.port))
-    sck.listen(3)
+    sck.listen(5)
 except Exception as e:
     raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
 
@@ -22,19 +22,17 @@ except Exception as e:
 def on_new_client(client, connection):
     ip = connection[0]
     port = connection[1]
-    print(f"The new connection was made from IP: {ip}, and port: {port}!")
+    print(f"THe new connection was made from IP: {ip}, and port: {port}!")
     while True:
         welcome = f"Welcome to the game! Do you want to play?"
         client.send(welcome.encode('utf-8'))
+
         msg = client.recv(1024)
-        if msg.decode() == 'no':
+        if msg.decode() == 'exit':
             break
         print(f"The client said: {msg.decode()}")
-        reply = f"Let's start!"
-        client.send(reply.encode('utf-8'))
-
-
-
+        reply = f"You told me: {msg.decode()}"
+        client.sendall(reply.encode('utf-8'))
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
 
