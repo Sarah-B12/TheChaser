@@ -32,13 +32,15 @@ def check_answer():
         client.send(reply.encode('utf-8'))
         check_answer()
     elif (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
-        if (correct_answer == q[ord(answer) - 96]):
+        if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
             right = "You're right! Bravo!"
             client.send(right.encode('utf-8'))
-            wallet += 5000
+            # wallet += 5000
+            # PROBLEM : Renvoie la prochaine question mais pas le message "right"
         else:
             wrong = "The answer you chose is incorrect."
             client.send(wrong.encode('utf-8'))
+            # PROBLEM : Ne renvoie pas la prochaine question si wrong
     return
 
 

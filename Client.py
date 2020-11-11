@@ -25,13 +25,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             print("Bye!")
             break
         for i in range(0, 3):
-            f_question = sck.recv(1024)
-            print(f_question.decode("utf-8"))
-            f_answ = input("> ")
-            sck.sendall(f_answ.encode('utf-8'))
-            answer = f_answ.lower()
+            question = sck.recv(1024)
+            print(question.decode("utf-8"))
+            answ = input("> ")
+            sck.sendall(answ.encode('utf-8'))
+            answer = answ.lower()
             while not (answer in acceptable_answers):
                 redo = sck.recv(1024)
                 print(redo.decode("utf-8"))
-                f_answ = input("> ")
-                sck.sendall(f_answ.encode('utf-8'))
+                answ = input("> ")
+                sck.sendall(answ.encode('utf-8'))
+            right_or_wrong = sck.recv(1024)
