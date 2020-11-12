@@ -5,10 +5,9 @@ import random
 import Questions
 
 
-def ask_question(lvl):
+def ask_question(lvl, qnum):
     # Generates a number and gets the question from the database
-    qnum = int(random.random() * 10)
-    print("Je suis ask_question")
+    print("Je suis ask_question")  # TO ERASE
     global q
     q = Questions.get_question(lvl, qnum)
     to_return = q[0]
@@ -19,7 +18,7 @@ def ask_question(lvl):
 
     global correct_answer
     correct_answer = q[5]
-    return qnum
+    return
 
 
 def check_answer():
@@ -66,6 +65,8 @@ except Exception as e:
 def on_new_client(client, connection):
     ip = connection[0]
     port = connection[1]
+    q1 = 0
+    q2 = 0
     print(f"THe new connection was made from IP: {ip}, and port: {port}!")
     while True:
         welcome = f"Welcome to the game! Do you want to play?"
@@ -74,10 +75,22 @@ def on_new_client(client, connection):
         if msg.decode() == 'no':
             break
         print("The player wants to play!")
-        for i in range(0, 3): # First part questions
+        # FIRST PART QUESTIONS
+        for i in range(0, 3):
             j = i+1
             print("Asking question %s ..." % j)
-            qnum = ask_question(0)
+            # Check that the progr. don't ask the same question
+            if j == 1:
+                qnum = int(random.random() * 10)
+            elif j == 2:
+                q1 = qnum
+                while (q1 == qnum):
+                    qnum = int(random.random() * 10)
+            elif j ==3:
+                q2 = qnum
+                while (q2 == qnum or q1 == qnum):
+                    qnum = int(random.random() * 10)
+            ask_question(0, qnum)
             check_answer()
             # TODO : Check for qnum != qnum_next
             # TODO : Check for wallet
