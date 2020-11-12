@@ -86,13 +86,12 @@ def on_new_client(client, connection):
                 q1 = qnum
                 while (q1 == qnum):
                     qnum = int(random.random() * 10)
-            elif j ==3:
+            elif j == 3:
                 q2 = qnum
                 while (q2 == qnum or q1 == qnum):
                     qnum = int(random.random() * 10)
             ask_question(0, qnum)
             check_answer()
-            # TODO : Check for qnum != qnum_next
             # TODO : Check for wallet
         # if wallet == 0:
         #    print("This guy is so dumb...")
