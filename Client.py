@@ -42,4 +42,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
                 answer = answ.lower()
             right_or_wrong = sck.recv(1024)
             print(right_or_wrong.decode("utf-8"))
+            # For the client to send between two recv
+            sthg = "Receive"
+            sck.sendall(sthg.encode('utf-8'))
             print("HERE")  # TO ERASE
+        wallet = sck.recv(1024)
+        print(wallet.decode("utf-8"))

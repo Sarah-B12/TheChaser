@@ -23,6 +23,7 @@ def ask_question(lvl, qnum):
 
 def check_answer():
     global correct_answer, q
+    global wallet
     # wallet = 0
     msg = client.recv(1024)  # Answer of the player
     answer = msg.decode()
@@ -37,7 +38,7 @@ def check_answer():
         if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
             right = "You're right! Bravo!"
             client.send(right.encode('utf-8'))
-            # wallet += 5000
+            wallet += 5000
         else:
             wrong = "The answer you chose is incorrect."
             client.send(wrong.encode('utf-8'))
@@ -54,6 +55,7 @@ print(f"Running the server on: {args.host} and port: {args.port}")
 sck = socket.socket()
 sck.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 acceptable_answers = ["a", "b", "c", "d"]
+wallet = 0
 
 try:
     sck.bind((args.host, args.port))
@@ -92,9 +94,17 @@ def on_new_client(client, connection):
                     qnum = int(random.random() * 10)
             ask_question(0, qnum)
             check_answer()
-            # TODO : Check for wallet
-        # if wallet == 0:
-        #    print("This guy is so dumb...")
+            # For the server to recv between two send
+            sthg = client.recv(1024)
+            print(sthg.decode("utf-8"))
+        if wallet == 0:
+            print("This guy is so dumb...")
+            money = "You answer it all wrong! Try again."
+            client.send(money.encode('utf-8'))
+        else:
+            print("%s" % wallet)
+            money = "You wallet is %s" % wallet
+            client.send(money.encode('utf-8'))
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
