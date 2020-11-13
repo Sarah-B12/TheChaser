@@ -69,4 +69,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
         print(right_or_wrong.decode("utf-8"))
         sthg = "Receive"
         sck.sendall(sthg.encode('utf-8'))
+        # Test
 

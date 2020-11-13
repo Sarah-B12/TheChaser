@@ -176,6 +176,7 @@ def on_new_client(client, connection):
         check_answer(not joker_used)
         sthg = client.recv(1024)
         print(sthg.decode("utf-8"))
+        # Test
 
 
 
