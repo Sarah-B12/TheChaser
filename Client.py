@@ -46,5 +46,27 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             sthg = "Receive"
             sck.sendall(sthg.encode('utf-8'))
             print("HERE")  # TO ERASE
-        wallet = sck.recv(1024)
-        print(wallet.decode("utf-8"))
+
+        choice = "0"
+        while choice not in ("1", "2", "3"):
+            message = sck.recv(1024)
+            print(message.decode("utf-8"))
+            choice = input("> ")
+            sck.sendall(choice.encode('utf-8'))
+
+        question = sck.recv(1024)  # In function ask_question
+        print(question.decode("utf-8"))
+        answ = input("> ")
+        sck.sendall(answ.encode('utf-8'))
+
+        if answ == "joker":
+            possible_answers_joker = sck.recv(1024)  # In function ask_question
+            print(possible_answers_joker.decode("utf-8"))
+            joker_answer = input("> ")
+            sck.sendall(joker_answer.encode('utf-8'))
+
+        right_or_wrong = sck.recv(1024)
+        print(right_or_wrong.decode("utf-8"))
+        sthg = "Receive"
+        sck.sendall(sthg.encode('utf-8'))
+
