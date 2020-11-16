@@ -3,6 +3,7 @@ import argparse
 import threading
 import random
 import Questions
+import SmartChaser
 
 
 def ask_question(lvl, qnum, with_joker):
@@ -21,17 +22,14 @@ def ask_question(lvl, qnum, with_joker):
 
     global correct_answer
     correct_answer = q[5]
-    return
+    return to_return
 
 
-def check_answer(with_joker):
+def check_answer(answer, with_joker):
     global correct_answer, q
     global wallet
     global player_step
     # wallet = 0
-    msg = client.recv(1024)  # Answer of the player
-    answer = msg.decode()
-
     if with_joker and answer == "joker":
         global joker_used
         joker_used = True
@@ -52,8 +50,7 @@ B. {joker_answers[1]}
         answer = answer.lower()
         if answer == "a":
             player_step += 1
-            right = f"""You're right! Bravo!
-You are now in step {player_step}."""
+            right = "You're right! Bravo!"
             client.send(right.encode('utf-8'))
         else:
             wrong = "The answer you chose is incorrect."
@@ -61,12 +58,9 @@ You are now in step {player_step}."""
 
     else:
         answer = answer.lower()
-        while not (answer in acceptable_answers):  # Checking if the input makes sens
+        if not (answer in acceptable_answers):  # Checking if the input makes sens
             reply = "I don't understand what you mean. Enter the answer letter"
             client.send(reply.encode('utf-8'))
-            msg = client.recv(1024)
-            answer = msg.decode()
-            answer = answer.lower()
         if (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
             if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
                 player_step += 1
@@ -97,6 +91,23 @@ try:
     sck.listen(3)
 except Exception as e:
     raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
+
+def chaser_answer(lvl, qnum):
+    global correct_answer, q
+    global chaser_step
+    q = Questions.get_question(lvl, qnum)
+    answer = SmartChaser.chose_answer(q)
+    if answer == True:
+        return True
+    else:
+        return False
+    #if (correct_answer == q[ord(answer) - 96]):
+       # chaser_step+=1
+        #return True
+    #else:
+        #return False
+
+
 
 
 def on_new_client(client, connection):
@@ -130,7 +141,9 @@ def on_new_client(client, connection):
                 while (q2 == qnum or q1 == qnum):
                     qnum = int(random.random() * 10)
             ask_question(0, qnum,False)
-            check_answer(False)
+            msg = client.recv(1024)  # Answer of the player
+            answer = msg.decode()
+            check_answer(answer, False)
             # For the server to recv between two send
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
@@ -145,6 +158,7 @@ def on_new_client(client, connection):
         else:
             print("%s" % wallet)
             money = f"Your wallet is {wallet}. You are now at step 3."
+        global chaser_step
         chaser_step = 0
         choice = """Now choose between the next 3 options:
 1. Start from step 3 with the current sum.
@@ -167,21 +181,46 @@ def on_new_client(client, connection):
             else:
                 client.send("Please enter a correct choice (1, 2 or 3).".encode('utf-8'))
 
-        qnum = int(random.random() * 10)
+
+#partie ou il joue avec le chaser
         global joker_used
-        joker_used = False    # Au debut le joker n'est pas utilise.
-        ask_question(1, qnum, not joker_used)
-        # Premiere fois on rentre dans la function avec possibilite de l'utiliser
-        # Si il a ete utilise, joker_used = True et donc on envoie False pour les prochaines fois.
-        check_answer(not joker_used)
-        sthg = client.recv(1024)
-        print(sthg.decode("utf-8"))
-        # Test
+        joker_used = False  # Au debut le joker n'est pas utilise.
 
+        while player_step < 7 and chaser_step < player_step:
+            qnum = int(random.random() * 10)
+            ask_question(1, qnum, not joker_used)
+            # Premiere fois on rentre dans la function avec possibilite de l'utiliser
+            # Si il a ete utilise, joker_used = True et donc on envoie False pour les prochaines fois.
 
+            answer = ""
+            while not (answer in acceptable_answers) and answer != "joker":
+                msg = client.recv(1024)  # Answer of the player
+                answer = msg.decode()
+                check_answer(answer, not joker_used)
 
+            print("receive sthg")
+            sthg = client.recv(1024)
+            print(sthg.decode("utf-8"))
+            # Test
 
+            chaser_answ = chaser_answer(1, qnum)
+            if chaser_answ == True:
+                chaser_response = "The chaser was right."
+                chaser_step += 1
+            else:
+                chaser_response = "The chaser was wrong."
 
+            chaser_response += f"""\nThe user wallet is {wallet}.
+The user step is {player_step}.
+The chaser step is {chaser_step}.
+The joker has {'not' if not joker_used else ''} been used."""
+
+            if player_step == 7:
+                chaser_response += "\nPlayer has WON."
+            elif chaser_step == player_step:
+                chaser_response += "\nChaser has WON."
+
+            client.send(chaser_response.encode('utf-8'))
 
 
 

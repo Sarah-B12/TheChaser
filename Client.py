@@ -54,20 +54,39 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             choice = input("> ")
             sck.sendall(choice.encode('utf-8'))
 
-        question = sck.recv(1024)  # In function ask_question
-        print(question.decode("utf-8"))
-        answ = input("> ")
-        sck.sendall(answ.encode('utf-8'))
+#      #start playing with the chaser
+        chaser_response = ""
+        while "WON" not in chaser_response:
+            question = sck.recv(1024)  # In function ask_question
+            print(question.decode("utf-8"))
+            answ = input("> ")
+            sck.sendall(answ.encode('utf-8'))
+            answer = answ.lower()
+            if answer != "joker" :
+                while not (answer in acceptable_answers) and answer != "joker":
+                    redo = sck.recv(1024)
+                    print("In while not")  # TO ERASE
+                    print(redo.decode("utf-8"))
+                    answ = input("> ")
+                    sck.sendall(answ.encode('utf-8'))
+                    answer = answ.lower()
 
-        if answ == "joker":
-            possible_answers_joker = sck.recv(1024)  # In function ask_question
-            print(possible_answers_joker.decode("utf-8"))
-            joker_answer = input("> ")
-            sck.sendall(joker_answer.encode('utf-8'))
 
-        right_or_wrong = sck.recv(1024)
-        print(right_or_wrong.decode("utf-8"))
-        sthg = "Receive"
-        sck.sendall(sthg.encode('utf-8'))
-        # Test
+            if answ == "joker":
+                possible_answers_joker = sck.recv(1024)  # In function ask_question
+                print(possible_answers_joker.decode("utf-8"))
+                joker_answer = input("> ")
+                sck.sendall(joker_answer.encode('utf-8'))
+
+            right_or_wrong = sck.recv(1024)
+            print(right_or_wrong.decode("utf-8"))
+            sthg = "Receive"
+            print("send sthg")
+            sck.sendall(sthg.encode('utf-8'))
+            # Test
+
+            #reponse du chaser
+            chaser_response = sck.recv(1024).decode("utf-8")
+            print(chaser_response)
+
 
