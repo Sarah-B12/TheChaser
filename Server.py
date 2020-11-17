@@ -7,7 +7,8 @@ import SmartChaser
 
 
 def ask_question(lvl, qnum, with_joker):
-    # Generates a number and gets the question from the database
+    acceptable_answers = []
+    # Gets the question from the database
     print("Je suis ask_question")  # TO ERASE
     global q
     q = Questions.get_question(lvl, qnum)
@@ -33,6 +34,7 @@ def check_answer(answer, with_joker):
     if with_joker and answer == "joker":
         global joker_used
         joker_used = True
+        acceptable_answers.remove('joker')
         joker_answers = [q[5]]
 
         for possible_answer in [q[1], q[2], q[3], q[4]]:
@@ -83,7 +85,6 @@ print(f"Running the server on: {args.host} and port: {args.port}")
 
 sck = socket.socket()
 sck.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-acceptable_answers = ["a", "b", "c", "d"]
 wallet = 0
 
 try:
@@ -115,6 +116,7 @@ def on_new_client(client, connection):
     port = connection[1]
     q1 = 0
     q2 = 0
+    global acceptable_answers
     print(f"THe new connection was made from IP: {ip}, and port: {port}!")
     while True:
         welcome = f"Welcome to the game! Do you want to play?"
@@ -124,6 +126,7 @@ def on_new_client(client, connection):
             break
         print("The player wants to play!")
         # FIRST PART QUESTIONS
+        acceptable_answers = ["a", "b", "c", "d"]
         global player_step
         player_step = 0
         for i in range(0, 3):
@@ -181,8 +184,8 @@ def on_new_client(client, connection):
             else:
                 client.send("Please enter a correct choice (1, 2 or 3).".encode('utf-8'))
 
-
-#partie ou il joue avec le chaser
+        acceptable_answers.append('joker')
+# partie ou il joue avec le chaser
         global joker_used
         joker_used = False  # Au debut le joker n'est pas utilise.
 
@@ -193,10 +196,10 @@ def on_new_client(client, connection):
             # Si il a ete utilise, joker_used = True et donc on envoie False pour les prochaines fois.
 
             answer = ""
-            while not (answer in acceptable_answers) and answer != "joker":
-                msg = client.recv(1024)  # Answer of the player
-                answer = msg.decode()
-                check_answer(answer, not joker_used)
+
+            msg = client.recv(1024)  # Answer of the player
+            answer = msg.decode()
+            check_answer(answer, not joker_used)
 
             print("receive sthg")
             sthg = client.recv(1024)

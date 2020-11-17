@@ -1,4 +1,4 @@
-import numpy as np
+import numpy
 
 def chose_answer(answers_list):
     answers_list.reverse()
@@ -7,7 +7,7 @@ def chose_answer(answers_list):
     mylist = list(dict.fromkeys(answers_list))
     # We removed the duplicate in the list (and the correct answer is always at the first place)
 
-    answer = np.random.choice(mylist, 1, p=[0.75, 0.25/3, 0.25/3, 0.25/3, 0])
+    answer = numpy.random.choice(mylist, 1, p=[0.75, 0.25/3, 0.25/3, 0.25/3, 0])
 
     if answer == mylist[0]:   #reponse dans le premier truk?
         return True
