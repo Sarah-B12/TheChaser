@@ -3,7 +3,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="This is the client for the multi threaded socket server!")
 parser.add_argument('--host', metavar='host', type=str, nargs='?', default=socket.gethostname())
-parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65433)
+parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65430)
 args = parser.parse_args()
 
 acceptable_answers = ["a", "b", "c", "d"]

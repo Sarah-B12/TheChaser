@@ -78,7 +78,7 @@ You are now in step {player_step}."""
 
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
 parser.add_argument('--host', metavar='host', type=str, nargs='?', default=socket.gethostname())
-parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65433)
+parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65430)
 args = parser.parse_args()
 
 print(f"Running the server on: {args.host} and port: {args.port}")
