@@ -142,7 +142,6 @@ def on_new_client(client, connection):
             print("This guy is so dumb...")
             money = "You answer it all wrong! Try again."
             client.send(money.encode('utf-8'))
-            player_step = 0
             continue
         else:
             print("%s" % player.get_wallet())
