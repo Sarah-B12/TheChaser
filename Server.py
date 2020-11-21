@@ -4,8 +4,8 @@ import threading
 import numpy as np
 import random
 import Questions
-import Player
-import SmartChaser
+from Player import Player
+from SmartChaser import SmartChaser
 
 
 def ask_question(lvl, qnum, with_joker):
@@ -62,9 +62,10 @@ B. {joker_answers[1]}
             answer = answer.lower()
         if (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
             if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
-                player.step_plus_one()
-                right = f"""You're right! Bravo!
-You are now in step {player.get_step()}."""
+                right = f"You're right! Bravo!"
+                if part_2:
+                    player.step_plus_one()
+                    right = right + "You are now in step " + {player.get_step()}
                 client.send(right.encode('utf-8'))
                 player.add_wallet()
             else:
@@ -93,10 +94,6 @@ except Exception as e:
     raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
 
 
-
-
-
-
 def on_new_client(client, connection):
     ip = connection[0]
     port = connection[1]
@@ -114,6 +111,8 @@ def on_new_client(client, connection):
             break
         print("The player wants to play!")
         # FIRST PART QUESTIONS
+        global part_2
+        part_2 = False
         acceptable_answers = ["a", "b", "c", "d"]
         for i in range(0, 3):
             j = i+1
@@ -167,6 +166,7 @@ def on_new_client(client, connection):
         acceptable_answers.append('joker')
 
         # SECOND PART WITH CHASER
+        part_2 = true
         chaser = SmartChaser()
         global joker_used
         joker_used = False  # Au debut le joker n'est pas utilise.

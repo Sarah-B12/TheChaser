@@ -50,12 +50,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
         f_p_res = sck.recv(1024)  # Result of the first part
         print(f_p_res.decode("utf-8"))
 
-        if f_p_res.split()[0] == 'Your':  # If the first word of the msg sent by the server is 'Your'
-            choice = input("> ")
-            sck.send(answ.encode('utf-8'))
-
-        elif f_p_res.split()[0] == 'You':
+        if f_p_res.split()[0] == 'You':  # If the first word of the msg sent by the server is 'You'
             continue
+
+        choice = input("> ")
+        sck.send(choice.encode('utf-8'))
 
         while choice not in ("1", "2", "3"):
             redo = sck.recv(1024)
@@ -63,7 +62,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             choice = input("> ")
             sck.send(choice.encode('utf-8'))
 '''
-#      #start playing with the chaser
+       #  start playing with the chaser
         chaser_response = ""
         while "WON" not in chaser_response:
             question = sck.recv(1024)  # In function ask_question
