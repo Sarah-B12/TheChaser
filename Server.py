@@ -1,13 +1,14 @@
 import socket
 import argparse
 import threading
+import numpy as np
 import random
 import Questions
+import Player
 import SmartChaser
 
 
 def ask_question(lvl, qnum, with_joker):
-    acceptable_answers = []
     # Gets the question from the database
     print("Je suis ask_question")  # TO ERASE
     global q
@@ -27,31 +28,26 @@ def ask_question(lvl, qnum, with_joker):
 
 
 def check_answer(answer, with_joker):
-    global correct_answer, q
-    global wallet
-    global player_step
-    # wallet = 0
-    if with_joker and answer == "joker":
-        global joker_used
-        joker_used = True
+    # global correct_answer, q
+    if with_joker and answer == "joker":  # If the player use his joker
+        player.set_joker()
         acceptable_answers.remove('joker')
-        joker_answers = [q[5]]
-
-        for possible_answer in [q[1], q[2], q[3], q[4]]:
-            if possible_answer != q[5]:
-                joker_answers.append(possible_answer)
-                break
+        joker_answers = [q[5]]  # Put the right answer in the list
+        mylist = [q[1], q[2], q[3], q[4]]
+        answer = np.random.choice(mylist, 1, p=[0.25, 0.25, 0.25, 0.25])  # Chose randomly one of the other answer
+        joker_answers.append(answer)
+        random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
         client.send(f"""You used your joker. The two possible answers are:
 A. {joker_answers[0]}
 B. {joker_answers[1]}
     """.encode('utf-8'))
-
-        msg = client.recv(1024)  # Answer of the player
+        # TODO : CHECK THIS
+        msg = client.recv(1024)  # Answer of the player (when joker)
         answer = msg.decode()
         answer = answer.lower()
         if answer == "a":
-            player_step += 1
+            player.step_plus_one()
             right = "You're right! Bravo!"
             client.send(right.encode('utf-8'))
         else:
@@ -59,21 +55,24 @@ B. {joker_answers[1]}
             client.send(wrong.encode('utf-8'))
 
     else:
-        answer = answer.lower()
-        if not (answer in acceptable_answers):  # Checking if the input makes sens
-            reply = "I don't understand what you mean. Enter the answer letter"
-            client.send(reply.encode('utf-8'))
+        while not (answer in acceptable_answers):  # Checking if the input makes sens
+            redo = "I don't understand what you mean. Enter the answer letter"
+            client.send(redo.encode('utf-8'))
+            answer = (client.recv(1024)).decode()
+            answer = answer.lower()
         if (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
             if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
-                player_step += 1
+                player.step_plus_one()
                 right = f"""You're right! Bravo!
-You are now in step {player_step}."""
+You are now in step {player.get_step()}."""
                 client.send(right.encode('utf-8'))
-                wallet += 5000
+                player.add_wallet()
             else:
                 wrong = "The answer you chose is incorrect."
                 client.send(wrong.encode('utf-8'))
         return
+
+
 
 
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
@@ -93,20 +92,7 @@ try:
 except Exception as e:
     raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
 
-def chaser_answer(lvl, qnum):
-    global correct_answer, q
-    global chaser_step
-    q = Questions.get_question(lvl, qnum)
-    answer = SmartChaser.chose_answer(q)
-    if answer == True:
-        return True
-    else:
-        return False
-    #if (correct_answer == q[ord(answer) - 96]):
-       # chaser_step+=1
-        #return True
-    #else:
-        #return False
+
 
 
 
@@ -119,6 +105,8 @@ def on_new_client(client, connection):
     global acceptable_answers
     print(f"THe new connection was made from IP: {ip}, and port: {port}!")
     while True:
+        global player
+        player = Player()
         welcome = f"Welcome to the game! Do you want to play?"
         client.send(welcome.encode('utf-8'))
         msg = client.recv(1024)
@@ -127,8 +115,6 @@ def on_new_client(client, connection):
         print("The player wants to play!")
         # FIRST PART QUESTIONS
         acceptable_answers = ["a", "b", "c", "d"]
-        global player_step
-        player_step = 0
         for i in range(0, 3):
             j = i+1
             print("Asking question %s ..." % j)
@@ -143,53 +129,50 @@ def on_new_client(client, connection):
                 q2 = qnum
                 while (q2 == qnum or q1 == qnum):
                     qnum = int(random.random() * 10)
-            ask_question(0, qnum,False)
+            ask_question(0, qnum, player.get_joker())
             msg = client.recv(1024)  # Answer of the player
             answer = msg.decode()
-            check_answer(answer, False)
+            answer = answer.lower()
+            check_answer(answer, player.get_joker())
             # For the server to recv between two send
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
-        global wallet
-        player_step = 3
-        if wallet == 0:
+
+        if player.get_wallet() == 0:
             print("This guy is so dumb...")
             money = "You answer it all wrong! Try again."
             client.send(money.encode('utf-8'))
             player_step = 0
             continue
         else:
-            print("%s" % wallet)
-            money = f"Your wallet is {wallet}. You are now at step 3."
-        global chaser_step
-        chaser_step = 0
+            print("%s" % player.get_wallet())
+            money = f"Your wallet is {player.get_wallet()}. You are now at step 3."
+        #global chaser_step
+        #chaser_step = 0
         choice = """Now choose between the next 3 options:
 1. Start from step 3 with the current sum.
 2. Start from previous step with the double of the sum.
 3. Start from next step with half of the sum."""
         client.send((money + choice).encode('utf-8'))
 
-        answer_choice = "0"
+        answer_choice = (client.recv(1024)).decode("utf-8")
+
         while answer_choice not in ("1", "2", "3"):
+            redo = "It is not an acceptable answer. Choose between 1, 2 or 3"
+            redo = client.send(redo.encode('utf-8'))
             answer_choice = client.recv(1024)
             answer_choice = answer_choice.decode("utf-8")
-            if answer_choice == "1":
-                pass
-            elif answer_choice == "2":
-                player_step -= 1
-                wallet *= 2
-            elif answer_choice == "3":
-                player_step += 1
-                wallet /= 2
-            else:
-                client.send("Please enter a correct choice (1, 2 or 3).".encode('utf-8'))
+        player.change_wallet_step(answer_choice)
 
+        '''
         acceptable_answers.append('joker')
-# partie ou il joue avec le chaser
+
+        # SECOND PART WITH CHASER
+        chaser = SmartChaser()
         global joker_used
         joker_used = False  # Au debut le joker n'est pas utilise.
 
-        while player_step < 7 and chaser_step < player_step:
+        while 7 > player_step > chaser.get_step():
             qnum = int(random.random() * 10)
             ask_question(1, qnum, not joker_used)
             # Premiere fois on rentre dans la function avec possibilite de l'utiliser
@@ -206,26 +189,26 @@ def on_new_client(client, connection):
             print(sthg.decode("utf-8"))
             # Test
 
-            chaser_answ = chaser_answer(1, qnum)
-            if chaser_answ == True:
+            chaser_answ = chaser.chaser_answer(1, qnum)
+            if chaser_answ:
                 chaser_response = "The chaser was right."
-                chaser_step += 1
+                chaser.step_plus_one()
             else:
                 chaser_response = "The chaser was wrong."
 
             chaser_response += f"""\nThe user wallet is {wallet}.
 The user step is {player_step}.
-The chaser step is {chaser_step}.
+The chaser step is {chaser.get_step()}.
 The joker has {'not' if not joker_used else ''} been used."""
 
             if player_step == 7:
                 chaser_response += "\nPlayer has WON."
-            elif chaser_step == player_step:
+            elif chaser.get_step() == player_step:
                 chaser_response += "\nChaser has WON."
 
             client.send(chaser_response.encode('utf-8'))
 
-
+'''
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()

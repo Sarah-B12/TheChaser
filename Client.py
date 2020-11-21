@@ -31,29 +31,38 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             question = sck.recv(1024)  # In function ask_question
             print(question.decode("utf-8"))
             answ = input("> ")
-            sck.sendall(answ.encode('utf-8'))
+            sck.send(answ.encode('utf-8'))  # Answer of the player
             answer = answ.lower()
             while not (answer in acceptable_answers):
                 redo = sck.recv(1024)
                 print("In while not")  # TO ERASE
                 print(redo.decode("utf-8"))
                 answ = input("> ")
-                sck.sendall(answ.encode('utf-8'))
+                sck.send(answ.encode('utf-8'))
                 answer = answ.lower()
             right_or_wrong = sck.recv(1024)
             print(right_or_wrong.decode("utf-8"))
             # For the client to send between two recv
             sthg = "Receive"
-            sck.sendall(sthg.encode('utf-8'))
+            sck.send(sthg.encode('utf-8'))
             print("HERE")  # TO ERASE
 
-        choice = "0"
-        while choice not in ("1", "2", "3"):
-            message = sck.recv(1024)
-            print(message.decode("utf-8"))
-            choice = input("> ")
-            sck.sendall(choice.encode('utf-8'))
+        f_p_res = sck.recv(1024)  # Result of the first part
+        print(f_p_res.decode("utf-8"))
 
+        if f_p_res.split()[0] == 'Your':  # If the first word of the msg sent by the server is 'Your'
+            choice = input("> ")
+            sck.send(answ.encode('utf-8'))
+
+        elif f_p_res.split()[0] == 'You':
+            continue
+
+        while choice not in ("1", "2", "3"):
+            redo = sck.recv(1024)
+            print(redo.decode("utf-8"))
+            choice = input("> ")
+            sck.send(choice.encode('utf-8'))
+'''
 #      #start playing with the chaser
         chaser_response = ""
         while "WON" not in chaser_response:
@@ -89,4 +98,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             chaser_response = sck.recv(1024).decode("utf-8")
             print(chaser_response)
 
-
+'''
