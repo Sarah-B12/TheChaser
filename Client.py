@@ -26,7 +26,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             break
         # FIRST PART QUESTIONS
         for i in range(0, 3):
-            j = i+1
+            j = i + 1
             print("Question number %s :" % j)
             question = sck.recv(1024)  # In function ask_question
             print(question.decode("utf-8"))
@@ -61,17 +61,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             print(redo.decode("utf-8"))
             choice = input("> ")
             sck.send(choice.encode('utf-8'))
-'''
-       #  start playing with the chaser
+
+        # SECOND PART QUESTIONS
+        acceptable_answers.append('joker')
         chaser_response = ""
         while "WON" not in chaser_response:
-            question = sck.recv(1024)  # In function ask_question
+            question = sck.recv(1024)  # Send in function ask_question
             print(question.decode("utf-8"))
             answ = input("> ")
-            sck.sendall(answ.encode('utf-8'))
             answer = answ.lower()
-            if answer != "joker" :
-                while not (answer in acceptable_answers) and answer != "joker":
+            sck.send(answer.encode('utf-8'))
+            if answer != "joker":
+                while not (answer in acceptable_answers):
                     redo = sck.recv(1024)
                     print("In while not")  # TO ERASE
                     print(redo.decode("utf-8"))
@@ -79,12 +80,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
                     sck.sendall(answ.encode('utf-8'))
                     answer = answ.lower()
 
-
-            if answ == "joker":
+            if answer == "joker":
                 possible_answers_joker = sck.recv(1024)  # In function ask_question
                 print(possible_answers_joker.decode("utf-8"))
                 joker_answer = input("> ")
-                sck.sendall(joker_answer.encode('utf-8'))
+                sck.send(joker_answer.encode('utf-8'))
 
             right_or_wrong = sck.recv(1024)
             print(right_or_wrong.decode("utf-8"))
@@ -93,8 +93,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             sck.sendall(sthg.encode('utf-8'))
             # Test
 
-            #reponse du chaser
+            # reponse du chaser
             chaser_response = sck.recv(1024).decode("utf-8")
             print(chaser_response)
-
-'''

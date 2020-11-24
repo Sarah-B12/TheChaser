@@ -20,6 +20,7 @@ def ask_question(lvl, qnum, with_joker):
 
     if with_joker:
         to_return += "\n You can also type 'joker'."
+
     client.send(to_return.encode('utf-8'))
 
     global correct_answer
@@ -30,19 +31,18 @@ def ask_question(lvl, qnum, with_joker):
 def check_answer(answer, with_joker):
     # global correct_answer, q
     if with_joker and answer == "joker":  # If the player use his joker
-        player.set_joker()
-        acceptable_answers.remove('joker')
+        player.set_joker()  # Joker now set to false
+        acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
         joker_answers = [q[5]]  # Put the right answer in the list
         mylist = [q[1], q[2], q[3], q[4]]
-        answer = np.random.choice(mylist, 1, p=[0.25, 0.25, 0.25, 0.25])  # Chose randomly one of the other answer
-        joker_answers.append(answer)
-        random.shuffle(joker_answers)  # Shuffle between the two elements of the list
+        choice = np.random.choice(mylist, 1, p=[0.25, 0.25, 0.25, 0.25])  # Chose randomly one of the other answer
+        joker_answers.append(choice)
+        # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
         client.send(f"""You used your joker. The two possible answers are:
 A. {joker_answers[0]}
 B. {joker_answers[1]}
     """.encode('utf-8'))
-        # TODO : CHECK THIS
         msg = client.recv(1024)  # Answer of the player (when joker)
         answer = msg.decode()
         answer = answer.lower()
@@ -51,7 +51,7 @@ B. {joker_answers[1]}
             right = "You're right! Bravo!"
             client.send(right.encode('utf-8'))
         else:
-            wrong = "The answer you chose is incorrect."
+            wrong = "The answer you chose is incorrect and you don't have your joker anymore."
             client.send(wrong.encode('utf-8'))
 
     else:
@@ -162,31 +162,26 @@ def on_new_client(client, connection):
             answer_choice = answer_choice.decode("utf-8")
         player.change_wallet_step(answer_choice)
 
-        '''
+
         acceptable_answers.append('joker')
 
         # SECOND PART WITH CHASER
-        part_2 = true
+        part_2 = True
         chaser = SmartChaser()
-        global joker_used
-        joker_used = False  # Au debut le joker n'est pas utilise.
+        player.set_joker()  # Now the player can use his joker
 
-        while 7 > player_step > chaser.get_step():
+        while 7 > player.get_step() > chaser.get_step():
             qnum = int(random.random() * 10)
-            ask_question(1, qnum, not joker_used)
-            # Premiere fois on rentre dans la function avec possibilite de l'utiliser
-            # Si il a ete utilise, joker_used = True et donc on envoie False pour les prochaines fois.
-
-            answer = ""
+            # TODO : qnum must be different everytime
+            ask_question(1, qnum, player.get_joker())
 
             msg = client.recv(1024)  # Answer of the player
             answer = msg.decode()
-            check_answer(answer, not joker_used)
+            check_answer(answer, player.get_joker())
 
             print("receive sthg")
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
-            # Test
 
             chaser_answ = chaser.chaser_answer(1, qnum)
             if chaser_answ:
@@ -196,18 +191,18 @@ def on_new_client(client, connection):
                 chaser_response = "The chaser was wrong."
 
             chaser_response += f"""\nThe user wallet is {wallet}.
-The user step is {player_step}.
+The user step is {player.get_step()}.
 The chaser step is {chaser.get_step()}.
-The joker has {'not' if not joker_used else ''} been used."""
+The joker has {'not' if not player.get_joker() else ''} been used."""
 
-            if player_step == 7:
+            if player.get_step() == 7:
                 chaser_response += "\nPlayer has WON."
-            elif chaser.get_step() == player_step:
+            elif chaser.get_step() == player.get_step():
                 chaser_response += "\nChaser has WON."
 
             client.send(chaser_response.encode('utf-8'))
 
-'''
+
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
