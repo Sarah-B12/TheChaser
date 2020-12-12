@@ -65,7 +65,7 @@ B. {joker_answers[1]}
             print("Je suis check_answer while not")
         if (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
             print("Je suis check_answer if")
-            if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
+            if (correct_answer == q[ord(answer) - 96]):  # unicode table char (a=97, b=98...)
                 right = f"You're right! Bravo!"
                 if part_2:
                     print("Je suis check_answer part2")
@@ -82,11 +82,11 @@ B. {joker_answers[1]}
         return
 
 
-
-
+# Make a parser object
 parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
 parser.add_argument('--host', metavar='host', type=str, nargs='?', default=socket.gethostname())
 parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65430)
+# The variables host and port are created (--host = long notation)
 args = parser.parse_args()
 
 print(f"Running the server on: {args.host} and port: {args.port}")
@@ -123,7 +123,7 @@ def on_new_client(client, connection):
         part_2 = False
         acceptable_answers = ["a", "b", "c", "d"]
         for i in range(0, 3):
-            j = i+1
+            j = i + 1
             print("Asking question %s ..." % j)
             # Check that the progr. don't ask the same question
             if j == 1:
@@ -153,8 +153,8 @@ def on_new_client(client, connection):
         else:
             print("%s" % player.get_wallet())
             money = f"Your wallet is {player.get_wallet()}. You are now at step 3."
-        #global chaser_step
-        #chaser_step = 0
+        # global chaser_step
+        # chaser_step = 0
         choice = """ Now choose between the next 3 options:
 1. Start from step 3 with the current sum.
 2. Start from previous step with the double of the sum.
@@ -169,7 +169,6 @@ def on_new_client(client, connection):
             answer_choice = client.recv(1024)
             answer_choice = answer_choice.decode("utf-8")
         player.change_wallet_step(answer_choice)
-
 
         acceptable_answers.append('joker')
 
@@ -209,8 +208,6 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
                 chaser_response += "\nChaser has WON."
 
             client.send(chaser_response.encode('utf-8'))
-
-
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
