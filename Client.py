@@ -71,16 +71,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             answ = input("> ")
             answer = answ.lower()
             sck.send(answer.encode('utf-8'))
-            if answer != "joker":
-                while not (answer in acceptable_answers):
-                    redo = sck.recv(1024)
-                    print("In while not")  # TO ERASE
-                    print(redo.decode("utf-8"))
-                    answ = input("> ")
-                    sck.sendall(answ.encode('utf-8'))
-                    answer = answ.lower()
+            while not (answer in acceptable_answers):
+                redo = sck.recv(1024)
+                print("In while not")  # TO ERASE
+                print(redo.decode("utf-8"))
+                answ = input("> ")
+                sck.send(answ.encode('utf-8'))
+                answer = answ.lower()
 
             if answer == "joker":
+                acceptable_answers.remove('joker')
                 possible_answers_joker = sck.recv(1024)  # In function ask_question
                 print(possible_answers_joker.decode("utf-8"))
                 joker_answer = input("> ")

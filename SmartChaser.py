@@ -19,23 +19,16 @@ class SmartChaser:
 
         answer = np.random.choice(mylist, 1, p=[0.75, 0.25/3, 0.25/3, 0.25/3, 0])
 
-        if answer == mylist[0]:   # reponse dans le premier truk?
+        if answer == mylist[0]:   # good answer
             return True
         else:
             return False
             # return answer
 
     def chaser_answer(self, lvl, qnum):
-        global correct_answer, q
-        global chaser_step
         q = Questions.get_question(lvl, qnum)
-        answer = SmartChaser.chose_answer(q)
-        if answer == True:
+        answer = self.chose_answer(q)
+        if answer:
             return True
         else:
             return False
-        # if (correct_answer == q[ord(answer) - 96]):
-        # chaser_step+=1
-        # return True
-        # else:
-        # return False

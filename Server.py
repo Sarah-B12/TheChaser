@@ -19,7 +19,7 @@ def ask_question(lvl, qnum, with_joker):
     to_return += "\n C. " + q[3] + "\t\t D. " + q[4]
 
     if with_joker:
-        to_return += "\n You can also type 'joker'."
+        to_return += "\nYou can also type 'joker'."
 
     client.send(to_return.encode('utf-8'))
 
@@ -29,14 +29,16 @@ def ask_question(lvl, qnum, with_joker):
 
 
 def check_answer(answer, with_joker):
+    print("Je suis check_answer")
     # global correct_answer, q
     if with_joker and answer == "joker":  # If the player use his joker
-        player.set_joker()  # Joker now set to false
+        player.clr_joker()  # Joker now set to false
         acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
         joker_answers = [q[5]]  # Put the right answer in the list
         mylist = [q[1], q[2], q[3], q[4]]
         choice = np.random.choice(mylist, 1, p=[0.25, 0.25, 0.25, 0.25])  # Chose randomly one of the other answer
         joker_answers.append(choice)
+        print("Je suis check_answer joker")
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
         client.send(f"""You used your joker. The two possible answers are:
@@ -60,13 +62,19 @@ B. {joker_answers[1]}
             client.send(redo.encode('utf-8'))
             answer = (client.recv(1024)).decode()
             answer = answer.lower()
+            print("Je suis check_answer while not")
         if (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
+            print("Je suis check_answer if")
             if (correct_answer == q[ord(answer) - 96]): # unicode table char (a=97, b=98...)
                 right = f"You're right! Bravo!"
                 if part_2:
+                    print("Je suis check_answer part2")
                     player.step_plus_one()
-                    right = right + "You are now in step " + {player.get_step()}
+                    right = right + f"\nYou are now in step {player.get_step()}"
+                    print("Je suis check_answer part2.2")
+                print("Je suis check_answer before send")
                 client.send(right.encode('utf-8'))
+                print("Je suis check_answer after send")
                 player.add_wallet()
             else:
                 wrong = "The answer you chose is incorrect."
@@ -147,7 +155,7 @@ def on_new_client(client, connection):
             money = f"Your wallet is {player.get_wallet()}. You are now at step 3."
         #global chaser_step
         #chaser_step = 0
-        choice = """Now choose between the next 3 options:
+        choice = """ Now choose between the next 3 options:
 1. Start from step 3 with the current sum.
 2. Start from previous step with the double of the sum.
 3. Start from next step with half of the sum."""
@@ -193,7 +201,7 @@ def on_new_client(client, connection):
             chaser_response += f"""\nThe user wallet is {wallet}.
 The user step is {player.get_step()}.
 The chaser step is {chaser.get_step()}.
-The joker has {'not' if not player.get_joker() else ''} been used."""
+The joker has {'not ' if player.get_joker() else ''}been used."""
 
             if player.get_step() == 7:
                 chaser_response += "\nPlayer has WON."

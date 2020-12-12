@@ -13,7 +13,10 @@ class Player:
         return self.joker
 
     def set_joker(self):
-        self.joker = not self.joker
+        self.joker = True
+
+    def clr_joker(self):
+        self.joker = False
 
     def step_plus_one(self):
         self.player_step += 1
