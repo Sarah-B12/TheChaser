@@ -1,6 +1,5 @@
 import socket
-import argparse
-import threading
+from _thread import *
 import numpy as np
 import random
 import Questions
@@ -82,24 +81,19 @@ B. {joker_answers[1]}
         return
 
 
-# Make a parser object
-parser = argparse.ArgumentParser(description="This is the server for the multithreaded socket demo!")
-parser.add_argument('--host', metavar='host', type=str, nargs='?', default=socket.gethostname())
-parser.add_argument('--port', metavar='port', type=int, nargs='?', default=65430)
-# The variables host and port are created (--host = long notation)
-args = parser.parse_args()
-
-print(f"Running the server on: {args.host} and port: {args.port}")
-
 sck = socket.socket()
-sck.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+host = socket.gethostname()
+port = 65534
+ThreadCount = 0
+
 wallet = 0
 
 try:
-    sck.bind((args.host, args.port))
+    sck.bind((host, port))
+    print("Waiting for connection")
     sck.listen(3)
 except Exception as e:
-    raise SystemExit(f"We could not bind the server on host: {args.host} to port: {args.port}, because: {e}")
+    raise SystemExit(f"We could not bind the server because: {e}")
 
 
 def on_new_client(client, connection):
@@ -108,7 +102,7 @@ def on_new_client(client, connection):
     q1 = 0
     q2 = 0
     global acceptable_answers
-    print(f"THe new connection was made from IP: {ip}, and port: {port}!")
+    print(f"The new connection was made from IP: {ip}, and port: {port}!")
     while True:
         global player
         player = Player()
@@ -216,7 +210,9 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
 while True:
     try:
         client, ip = sck.accept()
-        threading._start_new_thread(on_new_client, (client, ip))
+        start_new_thread(on_new_client, (client, ip))
+        ThreadCount+=1
+        print("Thread Count = " + str(ThreadCount))
     except KeyboardInterrupt:
         print(f"Gracefully shutting down the server!")
     except Exception as e:
