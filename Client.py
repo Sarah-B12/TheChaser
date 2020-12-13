@@ -86,8 +86,7 @@ while True:
         right_or_wrong = sck.recv(1024)
         print(right_or_wrong.decode("utf-8"))
         sthg = "Receive"
-        print("send sthg")
-        sck.sendall(sthg.encode('utf-8'))
+        sck.send(sthg.encode('utf-8'))
         # Test
 
         # reponse du chaser

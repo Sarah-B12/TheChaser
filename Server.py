@@ -74,7 +74,8 @@ B. {joker_answers[1]}
                 print("Je suis check_answer before send")
                 client.send(right.encode('utf-8'))
                 print("Je suis check_answer after send")
-                player.add_wallet()
+                if not part_2:
+                    player.add_wallet()
             else:
                 wrong = "The answer you chose is incorrect."
                 client.send(wrong.encode('utf-8'))
@@ -182,7 +183,6 @@ def on_new_client(client, connection):
             answer = msg.decode()
             check_answer(answer, player.get_joker())
 
-            print("receive sthg")
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
 
