@@ -29,7 +29,6 @@ def ask_question(lvl, qnum, with_joker):
 
 def check_answer(answer, with_joker):
     print("Je suis check_answer")
-    # global correct_answer, q
     if with_joker and answer == "joker":  # If the player use his joker
         player.clr_joker()  # Joker now set to false
         acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
