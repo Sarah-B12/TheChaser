@@ -88,8 +88,6 @@ ThreadCount = 0
 all_connections = []
 all_address = []
 
-wallet = 0
-
 try:
     sck.bind((host, port))
     print("Waiting for connection")
@@ -192,7 +190,7 @@ def on_new_client(client, connection):
             else:
                 chaser_response = "The chaser was wrong."
 
-            chaser_response += f"""\nThe user wallet is {wallet}.
+            chaser_response += f"""\nThe user wallet is {player.get_wallet()}.
 The user step is {player.get_step()}.
 The chaser step is {chaser.get_step()}.
 The joker has {'not ' if player.get_joker() else ''}been used."""
