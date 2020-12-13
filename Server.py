@@ -186,7 +186,7 @@ def on_new_client(client, connection):
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
 
-            chaser_answ = chaser.chaser_answer(1, qnum)
+            chaser_answ = chaser.chaser_answer(qnum)
             if chaser_answ:
                 chaser_response = "The chaser was right."
                 chaser.step_plus_one()

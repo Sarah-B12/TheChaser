@@ -25,8 +25,8 @@ class SmartChaser:
             return False
             # return answer
 
-    def chaser_answer(self, lvl, qnum):
-        q = Questions.get_question(lvl, qnum)
+    def chaser_answer(self, qnum):
+        q = Questions.get_question(1, qnum)
         answer = self.chose_answer(q)
         if answer:
             return True
