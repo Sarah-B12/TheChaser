@@ -67,20 +67,21 @@ while True:
         answ = input("> ")
         answer = answ.lower()
         sck.send(answer.encode('utf-8'))
-        while not (answer in acceptable_answers):
-            redo = sck.recv(1024)
-            print("In while not")  # TO ERASE
-            print(redo.decode("utf-8"))
-            answ = input("> ")
-            sck.send(answ.encode('utf-8'))
-            answer = answ.lower()
 
-        if answer == "joker":
+        if answer == "joker" and 'joker' in acceptable_answers:
             acceptable_answers.remove('joker')
             possible_answers_joker = sck.recv(1024)  # In function ask_question
             print(possible_answers_joker.decode("utf-8"))
             joker_answer = input("> ")
             sck.send(joker_answer.encode('utf-8'))
+        else:
+            while not (answer in acceptable_answers):
+                redo = sck.recv(1024)
+                print("In while not")  # TO ERASE
+                print(redo.decode("utf-8"))
+                answ = input("> ")
+                sck.send(answ.encode('utf-8'))
+                answer = answ.lower()
 
         right_or_wrong = sck.recv(1024)
         print(right_or_wrong.decode("utf-8"))

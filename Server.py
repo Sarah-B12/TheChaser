@@ -85,6 +85,8 @@ sck = socket.socket()
 host = socket.gethostname()
 port = 65534
 ThreadCount = 0
+all_connections = []
+all_address = []
 
 wallet = 0
 
@@ -173,7 +175,7 @@ def on_new_client(client, connection):
 
         while 7 > player.get_step() > chaser.get_step():
             qnum = int(random.random() * 10)
-            # TODO : qnum must be different everytime
+            # TODO : qnum be different everytime
             ask_question(1, qnum, player.get_joker())
 
             msg = client.recv(1024)  # Answer of the player
@@ -210,6 +212,8 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
 while True:
     try:
         client, ip = sck.accept()
+        all_connections.append(client)
+        all_address.append(ip)
         start_new_thread(on_new_client, (client, ip))
         ThreadCount+=1
         print("Thread Count = " + str(ThreadCount))
