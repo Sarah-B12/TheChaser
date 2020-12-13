@@ -34,7 +34,11 @@ def check_answer(answer, with_joker):
         acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
         joker_answers = [q[5]]  # Put the right answer in the list
         mylist = [q[1], q[2], q[3], q[4]]
-        choice = np.random.choice(mylist, 1, p=[0.25, 0.25, 0.25, 0.25])  # Chose randomly one of the other answer
+        # Remove the good answer of the list
+        for i in mylist:
+            if mylist[i] == q[5]:
+                mylist.remove(mylist[i])
+        choice = np.random.choice(mylist, 1, p=[1/3, 1/3, 1/3])  # Chose randomly one of the other answer
         joker_answers.append(choice)
         print("Je suis check_answer joker")
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list

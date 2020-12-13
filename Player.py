@@ -25,6 +25,7 @@ class Player:
         self.wallet += 5000
 
     def change_wallet_step(self, num):
+        num = int(num)
         if num == 2:
             self.wallet *= 2
             self.player_step -= 1
