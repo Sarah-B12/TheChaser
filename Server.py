@@ -38,7 +38,7 @@ def check_answer(answer, with_joker):
         for i in mylist:
             if mylist[i] == q[5]:
                 mylist.remove(mylist[i])
-        choice = np.random.choice(mylist, 1, p=[1/3, 1/3, 1/3])  # Chose randomly one of the other answer
+        choice = np.random.choice(mylist, 1, p=[1 / 3, 1 / 3, 1 / 3])  # Chose randomly one of the other answer
         joker_answers.append(choice)
         print("Je suis check_answer joker")
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
@@ -87,7 +87,7 @@ B. {joker_answers[1]}
 
 sck = socket.socket()
 host = socket.gethostname()
-port = 65532
+port = 65531
 ThreadCount = 0
 all_connections = []
 all_address = []
@@ -104,8 +104,7 @@ def on_new_client(client, connection):
     ip = connection[0]
     port = connection[1]
     q1 = 0
-    q2 = 0
-    global acceptable_answers
+    global acceptable_answers, qnum
     global ThreadCount
     print(f"The new connection was made from IP: {ip}, and port: {port}!")
     while True:
@@ -169,7 +168,7 @@ def on_new_client(client, connection):
 
         while answer_choice not in ("1", "2", "3"):
             redo = "It is not an acceptable answer. Choose between 1, 2 or 3"
-            redo = client.send(redo.encode('utf-8'))
+            client.send(redo.encode('utf-8'))
             answer_choice = client.recv(1024)
             answer_choice = answer_choice.decode("utf-8")
         player.change_wallet_step(answer_choice)
@@ -216,6 +215,7 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
     client.close()
     ThreadCount -= 1
 
+
 # Close all connections that were before
 for c in all_connections:
     c.close()
@@ -228,7 +228,7 @@ while True:
         all_connections.append(client)
         all_address.append(ip)
         start_new_thread(on_new_client, (client, ip))
-        ThreadCount+=1
+        ThreadCount += 1
         print("Thread Count = " + str(ThreadCount))
     except KeyboardInterrupt:
         print(f"Gracefully shutting down the server!")

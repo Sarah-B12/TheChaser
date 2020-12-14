@@ -2,7 +2,7 @@ import socket
 
 sck = socket.socket()
 host = socket.gethostname()
-port = 65532
+port = 65531
 
 acceptable_answers = ["a", "b", "c", "d"]
 
