@@ -2,7 +2,7 @@ import socket
 
 sck = socket.socket()
 host = socket.gethostname()
-port = 65534
+port = 65532
 
 acceptable_answers = ["a", "b", "c", "d"]
 
@@ -13,8 +13,10 @@ except Exception as e:
     raise SystemExit(f"We have failed to connect to host because: {e}")
 
 while True:
-    welcome_msg = sck.recv(1024)
-    print(welcome_msg.decode("utf-8"))
+    welcome_msg = (sck.recv(1024)).decode("utf-8")
+    print(welcome_msg)
+    if welcome_msg.split()[0] == 'Sorry':
+        break
     msg = input("> ")
     sck.sendall(msg.encode('utf-8'))
     if msg == 'no':
@@ -43,8 +45,8 @@ while True:
         sck.send(sthg.encode('utf-8'))
         print("HERE")  # TO ERASE
 
-    f_p_res = sck.recv(1024)  # Result of the first part
-    print(f_p_res.decode("utf-8"))
+    f_p_res = (sck.recv(1024)).decode("utf-8")  # Result of the first part
+    print(f_p_res)
 
     if f_p_res.split()[0] == 'You':  # If the first word of the msg sent by the server is 'You'
         continue

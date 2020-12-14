@@ -87,7 +87,7 @@ B. {joker_answers[1]}
 
 sck = socket.socket()
 host = socket.gethostname()
-port = 65534
+port = 65532
 ThreadCount = 0
 all_connections = []
 all_address = []
@@ -106,10 +106,16 @@ def on_new_client(client, connection):
     q1 = 0
     q2 = 0
     global acceptable_answers
+    global ThreadCount
     print(f"The new connection was made from IP: {ip}, and port: {port}!")
     while True:
         global player
         player = Player()
+        if ThreadCount > 3:
+            not_welcome = "Sorry we already have too much players. Try later"
+            client.send(not_welcome.encode('utf-8'))
+            print("Client refused")
+            break
         welcome = f"Welcome to the game! Do you want to play?"
         client.send(welcome.encode('utf-8'))
         msg = client.recv(1024)
@@ -208,7 +214,13 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()
+    ThreadCount -= 1
 
+# Close all connections that were before
+for c in all_connections:
+    c.close()
+del all_connections[:]
+del all_address[:]
 
 while True:
     try:
