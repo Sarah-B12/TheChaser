@@ -9,7 +9,6 @@ from SmartChaser import SmartChaser
 
 def ask_question(lvl, qnum, with_joker):
     # Gets the question from the database
-    print("Je suis ask_question")  # TO ERASE
     global q
     q = Questions.get_question(lvl, qnum)
     to_return = q[0]
@@ -28,7 +27,6 @@ def ask_question(lvl, qnum, with_joker):
 
 
 def check_answer(answer, with_joker):
-    print("Je suis check_answer")
     if with_joker and answer == "joker":  # If the player use his joker
         player.clr_joker()  # Joker now set to false
         acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
@@ -40,7 +38,6 @@ def check_answer(answer, with_joker):
                 mylist.remove(mylist[i])
         choice = np.random.choice(mylist, 1, p=[1 / 3, 1 / 3, 1 / 3])  # Chose randomly one of the other answer
         joker_answers.append(choice)
-        print("Je suis check_answer joker")
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
         client.send(f"""You used your joker. The two possible answers are:
@@ -64,19 +61,13 @@ B. {joker_answers[1]}
             client.send(redo.encode('utf-8'))
             answer = (client.recv(1024)).decode()
             answer = answer.lower()
-            print("Je suis check_answer while not")
         if (answer == "a" or answer == "b" or answer == "c" or answer == "d"):
-            print("Je suis check_answer if")
             if (correct_answer == q[ord(answer) - 96]):  # unicode table char (a=97, b=98...)
                 right = f"You're right! Bravo!"
                 if part_2:
-                    print("Je suis check_answer part2")
                     player.step_plus_one()
                     right = right + f"\nYou are now in step {player.get_step()}"
-                    print("Je suis check_answer part2.2")
-                print("Je suis check_answer before send")
                 client.send(right.encode('utf-8'))
-                print("Je suis check_answer after send")
                 if not part_2:
                     player.add_wallet()
             else:
@@ -156,8 +147,6 @@ def on_new_client(client, connection):
         else:
             print("%s" % player.get_wallet())
             money = f"Your wallet is {player.get_wallet()}. You are now at step 3."
-        # global chaser_step
-        # chaser_step = 0
         choice = """ Now choose between the next 3 options:
 1. Start from step 3 with the current sum.
 2. Start from previous step with the double of the sum.
