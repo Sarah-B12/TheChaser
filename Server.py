@@ -23,20 +23,18 @@ def ask_question(lvl, qnum, with_joker):
 
     global correct_answer
     correct_answer = q[5]
-    return to_return
+    return
 
 
 def check_answer(answer, with_joker):
     if with_joker and answer == "joker":  # If the player use his joker
         player.clr_joker()  # Joker now set to false
         acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
-        joker_answers = [q[5]]  # Put the right answer in the list
+        joker_answers = [q[5]]
         mylist = [q[1], q[2], q[3], q[4]]
-        # Remove the good answer of the list
-        for i in mylist:
-            if mylist[i] == q[5]:
-                mylist.remove(mylist[i])
-        choice = np.random.choice(mylist, 1, p=[1 / 3, 1 / 3, 1 / 3])  # Chose randomly one of the other answer
+        choice = random.choice(mylist)
+        while choice == q[5]:
+            choice = random.choice(mylist)  # Chose randomly one of the other answer
         joker_answers.append(choice)
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
@@ -169,11 +167,13 @@ def on_new_client(client, connection):
         chaser = SmartChaser()
         player.set_joker()  # Now the player can use his joker
 
+        k = 1
         while 7 > player.get_step() > chaser.get_step():
             qnum = int(random.random() * 10)
             # TODO : qnum be different everytime
+            print("Asking question %s ..." % k)
             ask_question(1, qnum, player.get_joker())
-
+            k += 1
             msg = client.recv(1024)  # Answer of the player
             answer = msg.decode()
             check_answer(answer, player.get_joker())
