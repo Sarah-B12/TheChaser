@@ -2,7 +2,7 @@ import socket
 
 sck = socket.socket()
 host = socket.gethostname()
-port = 65532
+port = 65531
 
 acceptable_answers = ["a", "b", "c", "d"]
 
@@ -18,7 +18,7 @@ while True:
     if welcome_msg.split()[0] == 'Sorry':
         break
     msg = input("> ")
-    sck.sendall(msg.encode('utf-8'))
+    sck.send(msg.encode('utf-8'))
     if msg == 'no':
         print("Bye!")
         break
@@ -33,7 +33,6 @@ while True:
         answer = answ.lower()
         while not (answer in acceptable_answers):
             redo = sck.recv(1024)
-            print("In while not")  # TO ERASE
             print(redo.decode("utf-8"))
             answ = input("> ")
             sck.send(answ.encode('utf-8'))
@@ -43,7 +42,6 @@ while True:
         # For the client to send between two recv
         sthg = "Receive"
         sck.send(sthg.encode('utf-8'))
-        print("HERE")  # TO ERASE
 
     f_p_res = (sck.recv(1024)).decode("utf-8")  # Result of the first part
     print(f_p_res)
@@ -79,7 +77,6 @@ while True:
         else:
             while not (answer in acceptable_answers):
                 redo = sck.recv(1024)
-                print("In while not")  # TO ERASE
                 print(redo.decode("utf-8"))
                 answ = input("> ")
                 sck.send(answ.encode('utf-8'))
@@ -89,10 +86,10 @@ while True:
         print(right_or_wrong.decode("utf-8"))
         sthg = "Receive"
         sck.send(sthg.encode('utf-8'))
-        # Test
 
-        # reponse du chaser
         chaser_response = sck.recv(1024).decode("utf-8")
         print(chaser_response)
+        ab = "Okay"
+        sck.send(ab.encode('utf-8'))
 
 sck.close()
