@@ -89,7 +89,7 @@ while True:
 
         chaser_response = sck.recv(1024).decode("utf-8")
         print(chaser_response)
-        ab = "Let's continue"
+        ab = "Okay"
         sck.send(ab.encode('utf-8'))
 
 sck.close()
