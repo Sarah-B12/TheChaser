@@ -11,6 +11,7 @@ def ask_question(lvl, qnum, with_joker):
     # Gets the question from the database
     global q
     q = Questions.get_question(lvl, qnum)
+    print(q)
     to_return = q[0]
 
     to_return += "\n A. " + q[1] + "\t\t B. " + q[2]
@@ -199,6 +200,10 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
                 chaser_response += "\nChaser has WON."
 
             client.send(chaser_response.encode('utf-8'))
+
+            sthg2 = client.recv(1024)
+            print(sthg2.decode("utf-8"))
+
 
     print(f"The client from ip: {ip}, and port: {port}, has gracefully diconnected!")
     client.close()

@@ -18,7 +18,7 @@ while True:
     if welcome_msg.split()[0] == 'Sorry':
         break
     msg = input("> ")
-    sck.sendall(msg.encode('utf-8'))
+    sck.send(msg.encode('utf-8'))
     if msg == 'no':
         print("Bye!")
         break
@@ -89,5 +89,7 @@ while True:
 
         chaser_response = sck.recv(1024).decode("utf-8")
         print(chaser_response)
+        ab = "Let's continue"
+        sck.send(ab.encode('utf-8'))
 
 sck.close()
