@@ -1,6 +1,5 @@
 import socket
 from _thread import *
-import numpy as np
 import random
 import Questions
 from Player import Player
@@ -147,9 +146,9 @@ def on_new_client(client, connection):
             print("%s" % player.get_wallet())
             money = f"Your wallet is {player.get_wallet()}. You are now at step 3."
         choice = """ Now choose between the next 3 options:
-1. Start from step 3 with the current sum.
-2. Start from previous step with the double of the sum.
-3. Start from next step with half of the sum."""
+1. Start from step 3 with your current wallet.
+2. Start from previous step with the double of your wallet.
+3. Start from next step with half of your wallet."""
         client.send((money + choice).encode('utf-8'))
 
         answer_choice = (client.recv(1024)).decode("utf-8")
