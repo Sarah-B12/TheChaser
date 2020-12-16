@@ -38,10 +38,8 @@ def check_answer(answer, with_joker):
         joker_answers.append(choice)
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
-        client.send(f"""You used your joker. The two possible answers are:
-A. {joker_answers[0]}
-B. {joker_answers[1]}
-    """.encode('utf-8'))
+        joker_used = f"You used your joker. The two possible answers are:\nA. {joker_answers[0]}\nB. {joker_answers[1]}"
+        client.send(joker_used.encode('utf-8'))
         msg = client.recv(1024)  # Answer of the player (when joker)
         answer = msg.decode()
         answer = answer.lower()
