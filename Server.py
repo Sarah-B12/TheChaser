@@ -219,7 +219,6 @@ while True:
         all_connections.append(client)
         all_address.append(ip)
         start_new_thread(on_new_client, (client, ip))
-        print("klsdfjlsdjf")
         ThreadCount += 1
         print("Thread Count = " + str(ThreadCount))
     except KeyboardInterrupt:
