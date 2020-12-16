@@ -1,8 +1,8 @@
 import socket
 
-sck = socket.socket()
+sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostname()
-port = 65531
+port = 65530
 
 acceptable_answers = ["a", "b", "c", "d"]
 
@@ -57,7 +57,7 @@ while True:
         print(redo.decode("utf-8"))
         choice = input("> ")
         sck.send(choice.encode('utf-8'))
-
+    '''
     # SECOND PART QUESTIONS
     acceptable_answers.append('joker')
     chaser_response = ""
@@ -91,5 +91,5 @@ while True:
         print(chaser_response)
         ab = "Okay"
         sck.send(ab.encode('utf-8'))
-
+    '''
 sck.close()

@@ -72,9 +72,9 @@ def check_answer(answer, with_joker):
         return
 
 
-sck = socket.socket()
+sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host = socket.gethostname()
-port = 65531
+port = 65530
 ThreadCount = 0
 all_connections = []
 all_address = []
@@ -219,6 +219,7 @@ while True:
         all_connections.append(client)
         all_address.append(ip)
         start_new_thread(on_new_client, (client, ip))
+        print("klsdfjlsdjf")
         ThreadCount += 1
         print("Thread Count = " + str(ThreadCount))
     except KeyboardInterrupt:
