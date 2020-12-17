@@ -72,20 +72,6 @@ def check_answer(answer, with_joker):
         return
 
 
-sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = socket.gethostname()
-port = 65530
-ThreadCount = 0
-all_connections = []
-all_address = []
-
-try:
-    sck.bind((host, port))
-    print("Waiting for connection")
-    sck.listen(3)
-except Exception as e:
-    raise SystemExit(f"We could not bind the server because: {e}")
-
 
 def on_new_client(client, connection):
     ip = connection[0]
@@ -206,6 +192,21 @@ The joker has {'not ' if player.get_joker() else ''}been used."""
     client.close()
     ThreadCount -= 1
 
+
+
+sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+host = socket.gethostname()
+port = 65530
+ThreadCount = 0
+all_connections = []
+all_address = []
+
+try:
+    sck.bind((host, port))
+    print("Waiting for connection")
+    sck.listen(3)
+except Exception as e:
+    raise SystemExit(f"We could not bind the server because: {e}")
 
 # Close all connections that were before
 for c in all_connections:
