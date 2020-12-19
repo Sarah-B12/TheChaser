@@ -1,3 +1,9 @@
+"""
+Sarah Brongniart 337903892
+Sarah
+"""
+
+
 class Player:
     player_step = 3
     wallet = 0

@@ -1,3 +1,9 @@
+"""
+Sarah Brongniart 337903892
+Sarah
+"""
+
+
 import socket
 from _thread import *
 import random

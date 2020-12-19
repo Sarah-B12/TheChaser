@@ -1,3 +1,11 @@
+"""
+Sarah Brongniart 337903892
+Sarah
+"""
+
+
+
+
 import socket
 
 sck = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
