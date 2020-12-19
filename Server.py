@@ -6,11 +6,9 @@ from Player import Player
 from SmartChaser import SmartChaser
 
 
-def ask_question(lvl, qnum, with_joker):
+def ask_question(lvl, qnum, with_joker, client):
     # Gets the question from the database
-    global q
     q = Questions.get_question(lvl, qnum)
-    print(q)
     to_return = q[0]
 
     to_return += "\n A. " + q[1] + "\t\t B. " + q[2]
@@ -21,12 +19,11 @@ def ask_question(lvl, qnum, with_joker):
 
     client.send(to_return.encode('utf-8'))
 
-    global correct_answer
     correct_answer = q[5]
-    return
+    return q, correct_answer
 
 
-def check_answer(answer, with_joker):
+def check_answer(answer, with_joker, player, part_2, acceptable_answers, q, correct_answer, client):
     if with_joker and answer == "joker":  # If the player use his joker
         player.clr_joker()  # Joker now set to false
         acceptable_answers.remove('joker')  # Remove 'joker' in the acceptable answers
@@ -36,6 +33,7 @@ def check_answer(answer, with_joker):
         while choice == q[5]:
             choice = random.choice(mylist)  # Chose randomly one of the other answer
         joker_answers.append(choice)
+        # TODO : shuffle joker answers
         # random.shuffle(joker_answers)  # Shuffle between the two elements of the list
 
         joker_used = f"You used your joker. The two possible answers are:\nA. {joker_answers[0]}\nB. {joker_answers[1]}"
@@ -77,11 +75,9 @@ def on_new_client(client, connection):
     ip = connection[0]
     port = connection[1]
     q1 = 0
-    global acceptable_answers, qnum
     global ThreadCount
     print(f"The new connection was made from IP: {ip}, and port: {port}!")
     while True:
-        global player
         player = Player()
         if ThreadCount > 3:
             not_welcome = "Sorry we already have too much players. Try later"
@@ -95,7 +91,6 @@ def on_new_client(client, connection):
             break
         print("The player wants to play!")
         # FIRST PART QUESTIONS
-        global part_2
         part_2 = False
         acceptable_answers = ["a", "b", "c", "d"]
         for i in range(0, 3):
@@ -112,11 +107,11 @@ def on_new_client(client, connection):
                 q2 = qnum
                 while (q2 == qnum or q1 == qnum):
                     qnum = int(random.random() * 10)
-            ask_question(0, qnum, player.get_joker())
+            q, correct_answer = ask_question(0, qnum, player.get_joker(), client)
             msg = client.recv(1024)  # Answer of the player
             answer = msg.decode()
             answer = answer.lower()
-            check_answer(answer, player.get_joker())
+            check_answer(answer, player.get_joker(), player, part_2,  acceptable_answers, q, correct_answer, client)
             # For the server to recv between two send
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
@@ -156,11 +151,11 @@ def on_new_client(client, connection):
             qnum = int(random.random() * 10)
             # TODO : qnum be different everytime
             print("Asking question %s ..." % k)
-            ask_question(1, qnum, player.get_joker())
+            q, correct_answer = ask_question(1, qnum, player.get_joker(), client)
             k += 1
             msg = client.recv(1024)  # Answer of the player
             answer = msg.decode()
-            check_answer(answer, player.get_joker())
+            check_answer(answer, player.get_joker(), player, part_2,  acceptable_answers, q, correct_answer, client)
 
             sthg = client.recv(1024)
             print(sthg.decode("utf-8"))
